@@ -7,8 +7,16 @@ async function getData() {
 const formatDate = (dateString: any) => {
     const date = new Date(dateString);
     const monthNames = ["января", "февраля", "марта", "апреля", "мая", "июня", "июля", "августа", "сентября", "октября", "ноября", "декабря"];
-    return `${date.getDate()} ${monthNames[date.getMonth()]}`;
+    const dayNames = ["воскресенье", "понедельник", "вторник", "среда", "четверг", "пятница", "суббота"];
+    return `${dayNames[date.getDay()]}, ${date.getDate()} ${monthNames[date.getMonth()]}`;
 };
+
+const adjustTimeZone = (utcDateString: any) => {
+    let date = new Date(utcDateString);
+    date = new Date(date.getTime() + (9 * 60 * 60 * 1000));  // Adjust for UTC+9
+    return date;
+};
+
 
 export default async function Home() {
     const data = await getData();
@@ -29,16 +37,17 @@ export default async function Home() {
                     <div key={day.date} className="mb-8 text-center">
                         <h3 className="text-2xl mb-4">{formatDate(day.date)}</h3>
                         <div className="flex justify-between flex-wrap">
+                            {/*it returns time in utc so when i show weather its gets a night and late morning the most warm time, my timezone is UTC+9*/}
                             {day.hour.filter((hour: any) => {
-                                const hourTime = new Date(hour.time).getHours();
-                                return [6, 12, 18, 21].includes(hourTime);
+                                const adjustedTime = adjustTimeZone(hour.time);
+                                return [6, 12, 18, 21].includes(adjustedTime.getHours());
                             }).map((filteredHour: any) => (
                                 <div key={filteredHour.time} className="flex flex-col items-center w-1/4 mb-4">
                                     <img src={filteredHour.condition.icon} alt={filteredHour.condition.text} className="w-8 h-8 mb-2" />
                                     <div className="bg-white bg-opacity-20 p-2 rounded">
                                         <p className="text-xl">{filteredHour.temp_c}°C</p>
                                     </div>
-                                    <p className="text-xl">{new Date(filteredHour.time).getHours()} ч</p>
+                                    <p className="text-xl">{adjustTimeZone(filteredHour.time).getHours()} ч</p>
                                 </div>
                             ))}
                         </div>
