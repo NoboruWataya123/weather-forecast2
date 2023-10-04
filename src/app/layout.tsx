@@ -79,7 +79,7 @@ export default function RootLayout({
           sizes="167x167"
           href="/icons/touch-icon-ipad-retina.png"
       />
-      <link rel="manifest" href="/manifest.json" />
+      <link rel="manifest" href="/public/manifest.json" />
       <meta property="og:type" content="website" />
       <meta property="og:title" content="Погода в Якутске" />
       <meta property="og:description" content="Погода в Якутске" />
