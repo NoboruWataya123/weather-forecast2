@@ -59,7 +59,7 @@ export default function RootLayout({
     <Head>
       <meta name="viewport" content="width=device-width,initial-scale=1" />
       <title>My awesome PWA app</title>
-      <meta name="description" content="Best PWA app in the world!" />
+      <meta name="description" content="Погода в Якутске" />
       <link rel="shortcut icon" href="/favicon.ico" />
       <link rel="mask-icon" href="/icons/mask-icon.svg" color="#FFFFFF" />
       <meta name="theme-color" content="#ffffff" />
@@ -80,6 +80,12 @@ export default function RootLayout({
           href="/icons/touch-icon-ipad-retina.png"
       />
       <link rel="manifest" href="/manifest.json" />
+      <meta property="og:type" content="website" />
+      <meta property="og:title" content="Погода в Якутске" />
+      <meta property="og:description" content="Погода в Якутске" />
+      <meta property="og:site_name" content="Погода в Якутске" />
+      <meta property="og:url" content="https://weather-forecast2-three.vercel.app/" />
+      <meta property="og:image" content="/icons/icon-512x512.png" />
     </Head>
       <body className={inter.className}>{children}</body>
     </html>
