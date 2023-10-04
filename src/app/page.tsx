@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 async function getData() {
     const res = await fetch(`https://api.weatherapi.com/v1/forecast.json?key=${process.env.WEATHER_API_KEY}&q=Yakutsk&days=3&aqi=no&alerts=no&lang=ru`, { next: { revalidate: 600 } });
     const data = await res.json();
@@ -26,7 +28,7 @@ export default async function Home() {
             <div className="bg-opacity-50 bg-gray-800 p-8 rounded-xl shadow-lg w-full max-w-md">
                 <div className="flex items-center justify-between mb-6">
                     <h2 className="text-3xl">{data.location.name}, {data.location.country}</h2>
-                    <img src={data.current.condition.icon} alt={data.current.condition.text} className="w-12 h-12" />
+                    <Image src={"https:"+data.current.condition.icon} alt={data.current.condition.text} width={72} height={72} />
                 </div>
                 <div className="flex items-center justify-between">
                     <p className="text-3xl">{data.current.temp_c}°C</p>
@@ -43,7 +45,7 @@ export default async function Home() {
                                 return [6, 12, 18, 21].includes(adjustedTime.getHours());
                             }).map((filteredHour: any) => (
                                 <div key={filteredHour.time} className="flex flex-col items-center w-1/4 mb-4">
-                                    <img src={filteredHour.condition.icon} alt={filteredHour.condition.text} className="w-8 h-8 mb-2" />
+                                    <Image src={"https:"+filteredHour.condition.icon} alt={filteredHour.condition.text} width={32} height={32} />
                                     <div className="bg-white bg-opacity-20 p-2 rounded">
                                         <p className="text-xl">{filteredHour.temp_c}°C</p>
                                     </div>
