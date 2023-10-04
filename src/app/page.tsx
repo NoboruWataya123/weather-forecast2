@@ -1,5 +1,5 @@
 async function getData() {
-    const res = await fetch(`https://api.weatherapi.com/v1/forecast.json?key=${process.env.WEATHER_API_KEY}&q=Yakutsk&days=3&aqi=no&alerts=no&lang=ru`);
+    const res = await fetch(`https://api.weatherapi.com/v1/forecast.json?key=${process.env.WEATHER_API_KEY}&q=Yakutsk&days=3&aqi=no&alerts=no&lang=ru`, { next: { revalidate: 600 } });
     const data = await res.json();
     return data;
 }
