@@ -49,7 +49,7 @@ export default async function Home() {
   const data = await getData();
 
   return (
-    <div className="min-h-screen bg-gradient-to-r from-blue-400 to-blue-600 flex flex-col items-center justify-center text-white">
+    <div className="h-screen bg-gradient-to-r from-blue-400 to-blue-600 flex flex-col items-center justify-center text-white">
       <div className="bg-opacity-50 bg-gray-800 p-8 rounded-xl shadow-lg w-full max-w-md">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-3xl">
