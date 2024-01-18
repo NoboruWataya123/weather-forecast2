@@ -62,7 +62,7 @@ export default function RootLayout({
       <meta name="description" content="Погода в Якутске" />
       <link rel="shortcut icon" href="/favicon.ico" />
       <link rel="mask-icon" href="/icons/mask-icon.svg" color="#FFFFFF" />
-      <meta name="theme-color" content="#ffffff" />
+      <meta name="theme-color" content="#B4B4B4" />
       <link rel="apple-touch-icon" href="/icons/touch-icon-iphone.png" />
       <link
           rel="apple-touch-icon"
