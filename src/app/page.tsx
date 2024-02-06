@@ -1,6 +1,6 @@
 import { CardTitle, CardDescription, Card } from "@/components/ui/card";
 import { WeatherData, WeatherForecastResponse } from "@/lib/interfaces";
-import { unstable_noStore as noStore } from 'next/cache';
+import { unstable_noStore as noStore } from "next/cache";
 
 async function fetchWeatherForecast(
   lat: number,
@@ -63,7 +63,7 @@ export default async function Home() {
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
             {filterDailyForecast(data.list)
-              .slice(0, 5) // Получаем первые 5 дней
+              .slice(0, 5)
               .map((dayForecast, index) => (
                 <Card className="p-4" key={index}>
                   <CardTitle className="text-lg font-bold text-gray-900 dark:text-gray-200">
@@ -74,7 +74,10 @@ export default async function Home() {
                     )}
                   </CardTitle>
                   <WeatherIcon
-                    id={dayForecast.morning?.weather[0].id}
+                    id={
+                      dayForecast.morning?.weather[0].id ??
+                      dayForecast.afternoon?.weather[0].id
+                    }
                     className="w-12 h-12 mx-auto text-gray-600 dark:text-gray-300"
                   />
                   <CardDescription className="text-gray-600 dark:text-gray-300 mt-2">
@@ -97,7 +100,7 @@ export default async function Home() {
         </div>
       </main>
     </div>
-  );  
+  );
 }
 
 function getDayOfWeek(dateString: string) {
@@ -108,21 +111,23 @@ function getDayOfWeek(dateString: string) {
 
 function filterDailyForecast(list: WeatherData[]) {
   const dailyData = new Map();
-  list.forEach((item) => {
+  list.forEach((item: WeatherData) => {
     const date = new Date(item.dt_txt);
     const day = date.toISOString().split("T")[0];
     const hour = date.getHours();
 
-    if (hour === 6 || hour === 14) {
-      if (!dailyData.has(day)) {
-        dailyData.set(day, { morning: null, afternoon: null });
-      }
-      const dayData = dailyData.get(day);
-      if (hour === 6) {
-        dayData.morning = item;
-      } else {
-        dayData.afternoon = item;
-      }
+    // Устанавливаем 6 часов утра для утренней температуры и 15 часов для дневной
+    if (!dailyData.has(day)) {
+      dailyData.set(day, { morning: null, afternoon: null });
+    }
+
+    const dayData = dailyData.get(day);
+    if (hour === 6) {
+      // Утреннее время
+      dayData.morning = item;
+    } else if (hour === 15) {
+      // Дневное время
+      dayData.afternoon = item;
     }
   });
   return Array.from(dailyData.values());
