@@ -19,48 +19,46 @@ async function fetchWeatherForecast(
 
 export default async function Home() {
   const data = await fetchWeatherForecast(62.035452, 129.675476);
-  // console.log(data);
-
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900">
       <main className="w-full max-w-2xl p-4 mx-auto space-y-6">
         <div className="flex flex-col sm:flex-row items-center justify-between">
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-200">
             Прогноз погоды
           </h1>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-2 sm:mt-0">
+          <p className="text-sm text-gray-600 dark:text-gray-300 mt-2 sm:mt-0">
             Якутск
           </p>
         </div>
         <Card className="p-6 space-y-4">
           <div className="flex flex-col sm:flex-row items-center justify-between">
             <div>
-              <CardTitle className="text-5xl font-bold text-gray-900 dark:text-gray-100">
+              <CardTitle className="text-5xl font-bold text-gray-900 dark:text-gray-200">
                 {data.list[0].main.temp}°C
               </CardTitle>
-              <CardDescription className="text-gray-500 dark:text-gray-400">
+              <CardDescription className="text-gray-600 dark:text-gray-300">
                 {data.list[0].weather[0].description}
               </CardDescription>
             </div>
-            <CloudIcon className="w-24 h-24 text-gray-500 dark:text-gray-400 mt-4 sm:mt-0" />
+            <CloudIcon className="w-24 h-24 text-gray-600 dark:text-gray-300 mt-4 sm:mt-0" />
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="flex items-center space-x-2">
-              <DropletIcon className="w-6 h-6 text-gray-500 dark:text-gray-400" />
-              <span className="text-gray-500 dark:text-gray-400">
+              <DropletIcon className="w-6 h-6 text-gray-600 dark:text-gray-300" />
+              <span className="text-gray-600 dark:text-gray-300">
                 Влажность: {data.list[0].main.humidity}%{" "}
               </span>
             </div>
             <div className="flex items-center space-x-2">
-              <WindIcon className="w-6 h-6 text-gray-500 dark:text-gray-400" />
-              <span className="text-gray-500 dark:text-gray-400">
+              <WindIcon className="w-6 h-6 text-gray-600 dark:text-gray-300" />
+              <span className="text-gray-600 dark:text-gray-300">
                 Ветер: {data.list[0].wind.speed} м/с
               </span>
             </div>
           </div>
         </Card>
         <div className="space-y-4">
-          <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">
+          <h2 className="text-xl font-bold text-gray-900 dark:text-gray-200">
             Прогноз на неделю
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
@@ -68,7 +66,7 @@ export default async function Home() {
               .slice(0, 5) // Получаем первые 5 дней
               .map((dayForecast, index) => (
                 <Card className="p-4" key={index}>
-                  <CardTitle className="text-lg font-bold text-gray-900 dark:text-gray-100">
+                  <CardTitle className="text-lg font-bold text-gray-900 dark:text-gray-200">
                     {getDayOfWeek(
                       dayForecast.morning
                         ? dayForecast.morning.dt_txt
@@ -77,16 +75,16 @@ export default async function Home() {
                   </CardTitle>
                   <WeatherIcon
                     id={dayForecast.morning?.weather[0].id}
-                    className="w-12 h-12 mx-auto text-gray-500 dark:text-gray-400"
+                    className="w-12 h-12 mx-auto text-gray-600 dark:text-gray-300"
                   />
-                  <CardDescription className="text-gray-500 dark:text-gray-400 mt-2">
+                  <CardDescription className="text-gray-600 dark:text-gray-300 mt-2">
                     Утро:{" "}
                     {dayForecast.morning
                       ? dayForecast.morning.main.temp.toFixed(1)
                       : "N/A"}
                     °C
                   </CardDescription>
-                  <CardDescription className="text-gray-500 dark:text-gray-400">
+                  <CardDescription className="text-gray-600 dark:text-gray-300">
                     День:{" "}
                     {dayForecast.afternoon
                       ? dayForecast.afternoon.main.temp.toFixed(1)
@@ -99,7 +97,7 @@ export default async function Home() {
         </div>
       </main>
     </div>
-  );
+  );  
 }
 
 function getDayOfWeek(dateString: string) {
@@ -115,12 +113,12 @@ function filterDailyForecast(list: WeatherData[]) {
     const day = date.toISOString().split("T")[0];
     const hour = date.getHours();
 
-    if (hour === 9 || hour === 15) {
+    if (hour === 6 || hour === 14) {
       if (!dailyData.has(day)) {
         dailyData.set(day, { morning: null, afternoon: null });
       }
       const dayData = dailyData.get(day);
-      if (hour === 9) {
+      if (hour === 6) {
         dayData.morning = item;
       } else {
         dayData.afternoon = item;
