@@ -1,10 +1,12 @@
 import { CardTitle, CardDescription, Card } from "@/components/ui/card";
 import { WeatherData, WeatherForecastResponse } from "@/lib/interfaces";
+import { unstable_noStore as noStore } from 'next/cache';
 
 async function fetchWeatherForecast(
   lat: number,
   lon: number
 ): Promise<WeatherForecastResponse> {
+  noStore(); // Disable caching for this request
   const apiKey = process.env.WEATHER_API_KEY; // Ensure you have the API key in your environment variables
   const url = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${apiKey}&units=metric&lang=ru`;
 
