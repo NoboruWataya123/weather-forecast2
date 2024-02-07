@@ -111,10 +111,13 @@ function getDayOfWeek(dateString: string) {
 
 function filterDailyForecast(list: WeatherData[]) {
   const dailyData = new Map();
+  const timezoneOffset = 9 * 60 * 60 * 1000; // Смещение для GMT+9 в миллисекундах
+
   list.forEach((item: WeatherData) => {
-    const date = new Date(item.dt_txt);
-    const day = date.toISOString().split("T")[0];
-    const hour = date.getHours();
+    const utcDate = new Date(item.dt_txt);
+    const localDate = new Date(utcDate.getTime() + timezoneOffset);
+    const day = localDate.toISOString().split("T")[0];
+    const hour = localDate.getHours();
 
     // Устанавливаем 6 часов утра для утренней температуры и 15 часов для дневной
     if (!dailyData.has(day)) {
@@ -130,6 +133,7 @@ function filterDailyForecast(list: WeatherData[]) {
       dayData.afternoon = item;
     }
   });
+
   return Array.from(dailyData.values());
 }
 
