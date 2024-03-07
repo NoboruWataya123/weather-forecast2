@@ -1,20 +1,49 @@
 import { CardTitle, CardDescription, Card } from "@/components/ui/card";
 import { WeatherData, WeatherForecastResponse } from "@/lib/interfaces";
-import { unstable_noStore as noStore } from "next/cache";
+import { fetchWeatherApi } from 'openmeteo';
 
-async function fetchWeatherForecast(
-  lat: number,
-  lon: number
-): Promise<WeatherForecastResponse> {
-  noStore(); // Disable caching for this request
-  const apiKey = process.env.WEATHER_API_KEY; // Ensure you have the API key in your environment variables
-  const url = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${apiKey}&units=metric&lang=ru`;
+async function fetchWeatherForecast(lat: number, lon: number) {
+  const params = {
+    "latitude": lat,
+    "longitude": lon,
+    "daily": ["temperature_2m_max", "temperature_2m_min", "wind_speed_10m_max"],
+    "wind_speed_unit": "ms",
+    "timezone": "Asia/Yakutsk" // Adjust the timezone if necessary
+  };
+  const url = "https://api.open-meteo.com/v1/forecast";
+  const responses = await fetchWeatherApi(url, params);
+  const response = responses[0];
+  const utcOffsetSeconds = response.utcOffsetSeconds();
+const timezone = response.timezone();
+const timezoneAbbreviation = response.timezoneAbbreviation();
+const latitude = response.latitude();
+const longitude = response.longitude();
+const range = (start: number, stop: number, step: number) =>
+	Array.from({ length: (stop - start) / step }, (_, i) => start + i * step);
 
-  const response = await fetch(url);
-  if (!response.ok) {
-    throw new Error("Failed to fetch weather data");
+  const daily = response.daily()!;
+const weatherData = {
+
+	daily: {
+		time: range(Number(daily.time()), Number(daily.timeEnd()), daily.interval()).map(
+			(t) => new Date((t + utcOffsetSeconds) * 1000)
+		),
+		temperature2mMax: daily.variables(0)!.valuesArray()!,
+		temperature2mMin: daily.variables(1)!.valuesArray()!,
+		windSpeed10mMax: daily.variables(2)!.valuesArray()!,
+	},
+
+};
+
+  for (let i = 0; i < weatherData.daily.time.length; i++) {
+    console.log(
+      weatherData.daily.time[i].toISOString(),
+      weatherData.daily.temperature2mMax[i],
+      weatherData.daily.temperature2mMin[i],
+      weatherData.daily.windSpeed10mMax[i]
+    );
   }
-  return response.json() as Promise<WeatherForecastResponse>;
+  return weatherData;
 }
 
 export default async function Home() {
@@ -34,25 +63,17 @@ export default async function Home() {
           <div className="flex flex-col sm:flex-row items-center justify-between">
             <div>
               <CardTitle className="text-5xl font-bold text-gray-900 dark:text-gray-200">
-                {data.list[0].main.temp}°C
+                {/* {data.list[0].main.temp}°C */}
+                {data.daily.temperature2mMax[0].toFixed(2)}
               </CardTitle>
-              <CardDescription className="text-gray-600 dark:text-gray-300">
-                {data.list[0].weather[0].description}
-              </CardDescription>
             </div>
             <CloudIcon className="w-24 h-24 text-gray-600 dark:text-gray-300 mt-4 sm:mt-0" />
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="flex items-center space-x-2">
-              <DropletIcon className="w-6 h-6 text-gray-600 dark:text-gray-300" />
-              <span className="text-gray-600 dark:text-gray-300">
-                Влажность: {data.list[0].main.humidity}%{" "}
-              </span>
-            </div>
-            <div className="flex items-center space-x-2">
               <WindIcon className="w-6 h-6 text-gray-600 dark:text-gray-300" />
               <span className="text-gray-600 dark:text-gray-300">
-                Ветер: {data.list[0].wind.speed} м/с
+                Ветер: {data.daily.windSpeed10mMax[0].toFixed(2)} м/с
               </span>
             </div>
           </div>
@@ -62,40 +83,27 @@ export default async function Home() {
             Прогноз на неделю
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-            {filterDailyForecast(data.list)
-              .slice(0, 5)
-              .map((dayForecast, index) => (
-                <Card className="p-4" key={index}>
-                  <CardTitle className="text-lg font-bold text-gray-900 dark:text-gray-200">
-                    {getDayOfWeek(
-                      dayForecast.morning
-                        ? dayForecast.morning.dt_txt
-                        : dayForecast.afternoon.dt_txt
-                    )}
-                  </CardTitle>
-                  <WeatherIcon
-                    id={
-                      dayForecast.morning?.weather[0].id ??
-                      dayForecast.afternoon?.weather[0].id
-                    }
-                    className="w-12 h-12 mx-auto text-gray-600 dark:text-gray-300"
-                  />
-                  <CardDescription className="text-gray-600 dark:text-gray-300 mt-2">
-                    Утро:{" "}
-                    {dayForecast.morning
-                      ? dayForecast.morning.main.temp.toFixed(1)
-                      : "N/A"}
-                    °C
-                  </CardDescription>
-                  <CardDescription className="text-gray-600 dark:text-gray-300">
-                    День:{" "}
-                    {dayForecast.afternoon
-                      ? dayForecast.afternoon.main.temp.toFixed(1)
-                      : "N/A"}
-                    °C
-                  </CardDescription>
-                </Card>
-              ))}
+              {
+                data.daily.time.map((dayForecast, index) => (
+                  <Card className="p-4" key={index}>
+                    <CardTitle className="text-lg font-bold text-gray-900 dark:text-gray-200">
+                      {getDayOfWeek(
+                        dayForecast.toISOString()
+                      )}
+                    </CardTitle>
+                    <CardDescription className="text-gray-600 dark:text-gray-300 mt-2">
+                      Макс:{" "}
+                      {data.daily.temperature2mMax[index].toFixed(1)}
+                      °C
+                    </CardDescription>
+                    <CardDescription className="text-gray-600 dark:text-gray-300">
+                      Мин:{" "}
+                      {data.daily.temperature2mMin[index].toFixed(1)}
+                      °C
+                    </CardDescription>
+                  </Card>
+                ))
+              }
           </div>
         </div>
       </main>
@@ -107,30 +115,6 @@ function getDayOfWeek(dateString: string) {
   const date = new Date(dateString);
   const days = ["Вс", "Пн", "Вт", "Ср", "Чт", "Пт", "Сб"];
   return days[date.getDay()];
-}
-
-function filterDailyForecast(list: WeatherData[]) {
-  const dailyData = new Map();
-  list.forEach((item: WeatherData) => {
-    const date = new Date(item.dt_txt);
-    const day = date.toISOString().split("T")[0];
-    const hour = date.getHours();
-
-    // Устанавливаем 6 часов утра для утренней температуры и 15 часов для дневной
-    if (!dailyData.has(day)) {
-      dailyData.set(day, { morning: null, afternoon: null });
-    }
-
-    const dayData = dailyData.get(day);
-    if (hour === 6) {
-      // Утреннее время
-      dayData.morning = item;
-    } else if (hour === 15) {
-      // Дневное время
-      dayData.afternoon = item;
-    }
-  });
-  return Array.from(dailyData.values());
 }
 
 function CloudIcon(props: any) {
