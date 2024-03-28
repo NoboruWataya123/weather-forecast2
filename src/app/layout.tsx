@@ -10,6 +10,7 @@ const APP_TITLE_TEMPLATE = "%s - Погода в Якутске";
 const APP_DESCRIPTION = "Погода в Якутске на 3 дня";
 
 const inter = Inter({ subsets: ['latin'] })
+export const revalidate = 3600
 
 export const metadata: Metadata = {
   icons: 'mask-icon.svg',
@@ -19,28 +20,9 @@ export const metadata: Metadata = {
     template: APP_TITLE_TEMPLATE,
   },
   description: APP_DESCRIPTION,
-  manifest: "/manifest.json",
-  themeColor: "#FFFFFF",
-  appleWebApp: {
-    capable: true,
-    statusBarStyle: "default",
-    title: APP_DEFAULT_TITLE,
-    // startUpImage: [],
-  },
-  formatDetection: {
-    telephone: false,
-  },
   openGraph: {
     type: "website",
     siteName: APP_NAME,
-    title: {
-      default: APP_DEFAULT_TITLE,
-      template: APP_TITLE_TEMPLATE,
-    },
-    description: APP_DESCRIPTION,
-  },
-  twitter: {
-    card: "summary",
     title: {
       default: APP_DEFAULT_TITLE,
       template: APP_TITLE_TEMPLATE,
@@ -58,27 +40,11 @@ export default function RootLayout({
     <html lang="en">
     <Head>
       <meta name="viewport" content="width=device-width,initial-scale=1" />
-      <title>My awesome PWA app</title>
+      <title>Погода в Якутске</title>
       <meta name="description" content="Погода в Якутске" />
       <link rel="shortcut icon" href="/favicon.ico" />
       <link rel="mask-icon" href="/icons/mask-icon.svg" color="#FFFFFF" />
       <meta name="theme-color" content="#B4B4B4" />
-      <link rel="apple-touch-icon" href="/icons/touch-icon-iphone.png" />
-      <link
-          rel="apple-touch-icon"
-          sizes="152x152"
-          href="/icons/touch-icon-ipad.png"
-      />
-      <link
-          rel="apple-touch-icon"
-          sizes="180x180"
-          href="/icons/touch-icon-iphone-retina.png"
-      />
-      <link
-          rel="apple-touch-icon"
-          sizes="167x167"
-          href="/icons/touch-icon-ipad-retina.png"
-      />
       <link rel="manifest" href="/public/manifest.json" />
       <meta property="og:type" content="website" />
       <meta property="og:title" content="Погода в Якутске" />

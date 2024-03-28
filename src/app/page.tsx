@@ -6,48 +6,41 @@ async function fetchWeatherForecast(lat: number, lon: number) {
   const params = {
     "latitude": lat,
     "longitude": lon,
-    "daily": ["temperature_2m_max", "temperature_2m_min", "wind_speed_10m_max"],
+    "daily": ["weather_code", "temperature_2m_max", "temperature_2m_min", "wind_speed_10m_max"],
     "wind_speed_unit": "ms",
-    "timezone": "Asia/Yakutsk" // Adjust the timezone if necessary
+    "timezone": "Asia/Yakutsk"
   };
+
   const url = "https://api.open-meteo.com/v1/forecast";
   const responses = await fetchWeatherApi(url, params);
   const response = responses[0];
   const utcOffsetSeconds = response.utcOffsetSeconds();
-const timezone = response.timezone();
-const timezoneAbbreviation = response.timezoneAbbreviation();
-const latitude = response.latitude();
-const longitude = response.longitude();
-const range = (start: number, stop: number, step: number) =>
-	Array.from({ length: (stop - start) / step }, (_, i) => start + i * step);
+  const timezone = response.timezone();
+  const timezoneAbbreviation = response.timezoneAbbreviation();
+  const latitude = response.latitude();
+  const longitude = response.longitude();
+  
+  const range = (start: number, stop: number, step: number) =>
+    Array.from({ length: (stop - start) / step }, (_, i) => start + i * step);
 
   const daily = response.daily()!;
-const weatherData = {
+  const weatherData: WeatherData = {
+    daily: {
+      time: range(Number(daily.time()), Number(daily.timeEnd()), daily.interval()).map(
+        (t) => new Date((t + utcOffsetSeconds) * 1000)
+      ),
+      temperature2mMax: daily.variables(0)!.valuesArray()!,
+      temperature2mMin: daily.variables(1)!.valuesArray()!,
+      windSpeed10mMax: daily.variables(2)!.valuesArray()!,
+    },
+  };
 
-	daily: {
-		time: range(Number(daily.time()), Number(daily.timeEnd()), daily.interval()).map(
-			(t) => new Date((t + utcOffsetSeconds) * 1000)
-		),
-		temperature2mMax: daily.variables(0)!.valuesArray()!,
-		temperature2mMin: daily.variables(1)!.valuesArray()!,
-		windSpeed10mMax: daily.variables(2)!.valuesArray()!,
-	},
-
-};
-
-  for (let i = 0; i < weatherData.daily.time.length; i++) {
-    console.log(
-      weatherData.daily.time[i].toISOString(),
-      weatherData.daily.temperature2mMax[i],
-      weatherData.daily.temperature2mMin[i],
-      weatherData.daily.windSpeed10mMax[i]
-    );
-  }
   return weatherData;
 }
 
 export default async function Home() {
   const data = await fetchWeatherForecast(62.035452, 129.675476);
+  
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900">
       <main className="w-full max-w-2xl p-4 mx-auto space-y-6">
@@ -63,8 +56,7 @@ export default async function Home() {
           <div className="flex flex-col sm:flex-row items-center justify-between">
             <div>
               <CardTitle className="text-5xl font-bold text-gray-900 dark:text-gray-200">
-                {/* {data.list[0].main.temp}°C */}
-                {data.daily.temperature2mMax[0].toFixed(2)}
+                {data.daily.temperature2mMax[0].toFixed(1)}°C
               </CardTitle>
             </div>
             <CloudIcon className="w-24 h-24 text-gray-600 dark:text-gray-300 mt-4 sm:mt-0" />
@@ -73,7 +65,7 @@ export default async function Home() {
             <div className="flex items-center space-x-2">
               <WindIcon className="w-6 h-6 text-gray-600 dark:text-gray-300" />
               <span className="text-gray-600 dark:text-gray-300">
-                Ветер: {data.daily.windSpeed10mMax[0].toFixed(2)} м/с
+                Ветер: {data.daily.windSpeed10mMax[0].toFixed(1)} м/с
               </span>
             </div>
           </div>
@@ -83,27 +75,19 @@ export default async function Home() {
             Прогноз на неделю
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-              {
-                data.daily.time.map((dayForecast, index) => (
-                  <Card className="p-4" key={index}>
-                    <CardTitle className="text-lg font-bold text-gray-900 dark:text-gray-200">
-                      {getDayOfWeek(
-                        dayForecast.toISOString()
-                      )}
-                    </CardTitle>
-                    <CardDescription className="text-gray-600 dark:text-gray-300 mt-2">
-                      Макс:{" "}
-                      {data.daily.temperature2mMax[index].toFixed(1)}
-                      °C
-                    </CardDescription>
-                    <CardDescription className="text-gray-600 dark:text-gray-300">
-                      Мин:{" "}
-                      {data.daily.temperature2mMin[index].toFixed(1)}
-                      °C
-                    </CardDescription>
-                  </Card>
-                ))
-              }
+            {data.daily.time.map((dayForecast, index) => (
+              <Card className="p-4" key={index}>
+                <CardTitle className="text-lg font-bold text-gray-900 dark:text-gray-200">
+                  {getDayOfWeek(dayForecast.toISOString())}
+                </CardTitle>
+                <CardDescription className="text-gray-600 dark:text-gray-300 mt-2">
+                  Макс: {data.daily.temperature2mMax[index].toFixed(1)}°C
+                </CardDescription>
+                <CardDescription className="text-gray-600 dark:text-gray-300">
+                  Мин: {data.daily.temperature2mMin[index].toFixed(1)}°C
+                </CardDescription>
+              </Card>
+            ))}
           </div>
         </div>
       </main>
@@ -117,7 +101,7 @@ function getDayOfWeek(dateString: string) {
   return days[date.getDay()];
 }
 
-function CloudIcon(props: any) {
+function CloudIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
     <svg
       {...props}
@@ -136,7 +120,7 @@ function CloudIcon(props: any) {
   );
 }
 
-function SunIcon(props: any) {
+function SunIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
     <svg
       {...props}
@@ -163,26 +147,7 @@ function SunIcon(props: any) {
   );
 }
 
-function DropletIcon(props: any) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M12 22a7 7 0 0 1 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5s-3 3.9-3 5.5a7 7 0 0 1 7 7z" />
-    </svg>
-  );
-}
-
-function WindIcon(props: any) {
+function WindIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
     <svg
       {...props}
@@ -203,7 +168,7 @@ function WindIcon(props: any) {
   );
 }
 
-function CloudSunIcon(props: any) {
+function CloudSunIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
     <svg
       {...props}
@@ -227,7 +192,7 @@ function CloudSunIcon(props: any) {
   );
 }
 
-function CloudRainIcon(props: any) {
+function CloudRainIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
     <svg
       {...props}
@@ -247,50 +212,4 @@ function CloudRainIcon(props: any) {
       <path d="M12 16v6" />
     </svg>
   );
-}
-
-function WeatherIcon({ id, ...props }: any) {
-  switch (id) {
-    case 800: // Clear
-      return <SunIcon />;
-    case 801: // Few clouds
-    case 802: // Scattered clouds
-      return <CloudSunIcon />;
-    case 803: // Broken clouds
-    case 804: // Overcast clouds
-      return <CloudIcon />;
-    case 300: // Light intensity drizzle
-    case 301: // Drizzle
-    case 302: // Heavy intensity drizzle
-    case 310: // Light intensity drizzle rain
-    case 311: // Drizzle rain
-    case 312: // Heavy intensity drizzle rain
-    case 313: // Shower rain and drizzle
-    case 314: // Heavy shower rain and drizzle
-    case 321: // Shower drizzle
-    case 500: // Light rain
-    case 501: // Moderate rain
-    case 502: // Heavy intensity rain
-    case 503: // Very heavy rain
-    case 504: // Extreme rain
-    case 511: // Freezing rain
-    case 520: // Light intensity shower rain
-    case 521: // Shower rain
-    case 522: // Heavy intensity shower rain
-    case 531: // Ragged shower rain
-      return <CloudRainIcon />;
-    case 200: // Thunderstorm with light rain
-    case 201: // Thunderstorm with rain
-    case 202: // Thunderstorm with heavy rain
-    case 210: // Light thunderstorm
-    case 211: // Thunderstorm
-    case 212: // Heavy thunderstorm
-    case 221: // Ragged thunderstorm
-    case 230: // Thunderstorm with light drizzle
-    case 231: // Thunderstorm with drizzle
-    case 232: // Thunderstorm with heavy drizzle
-      return <WindIcon />;
-    default:
-      return <CloudIcon />;
-  }
 }
