@@ -29,15 +29,29 @@ export interface Sys {
 }
 
 export interface WeatherData {
-  dt: number;
-  main: Main;
-  weather: Weather[];
-  clouds: Clouds;
-  wind: Wind;
-  visibility: number;
-  pop: number;
-  sys: Sys;
-  dt_txt: string;
+  // dt: number;
+  // main: Main;
+  // weather: Weather[];
+  // clouds: Clouds;
+  // wind: Wind;
+  // visibility: number;
+  // pop: number;
+  // sys: Sys;
+  // dt_txt: string;
+  // daily: {
+  //   time: range(Number(daily.time()), Number(daily.timeEnd()), daily.interval()).map(
+  //     (t) => new Date((t + utcOffsetSeconds) * 1000)
+  //   ),
+  //   temperature2mMax: daily.variables(0)!.valuesArray()!,
+  //   temperature2mMin: daily.variables(1)!.valuesArray()!,
+  //   windSpeed10mMax: daily.variables(2)!.valuesArray()!,
+  // },
+  daily: {
+    time: Date[];
+    temperature2mMax: number[];
+    temperature2mMin: number[];
+    windSpeed10mMax: number[];
+  };
 }
 
 export interface City {
