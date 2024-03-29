@@ -6,7 +6,7 @@ async function fetchWeatherForecast(lat: number, lon: number) {
   const params = {
     "latitude": lat,
     "longitude": lon,
-    "daily": ["weather_code", "temperature_2m_max", "temperature_2m_min", "wind_speed_10m_max"],
+    "daily": ["temperature_2m_max", "temperature_2m_min", "wind_speed_10m_max"],
     "wind_speed_unit": "ms",
     "timezone": "Asia/Yakutsk"
   };
