@@ -60,7 +60,6 @@ export default async function Home() {
                 {data.daily.temperature2mMax[0].toFixed(1)}°C
               </CardTitle>
             </div>
-            <CloudIcon className="w-24 h-24 text-gray-600 dark:text-gray-300 mt-4 sm:mt-0" />
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="flex items-center space-x-2">
@@ -100,25 +99,6 @@ function getDayOfWeek(dateString: string) {
   const date = new Date(dateString);
   const days = ["Вс", "Пн", "Вт", "Ср", "Чт", "Пт", "Сб"];
   return days[date.getDay()];
-}
-
-function CloudIcon(props: React.SVGProps<SVGSVGElement>) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 0 1 4.5 4.5Z" />
-    </svg>
-  );
 }
 
 function WindIcon(props: React.SVGProps<SVGSVGElement>) {
