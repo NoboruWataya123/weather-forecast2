@@ -2,43 +2,44 @@ import { CardTitle, CardDescription, Card } from "@/components/ui/card";
 import { WeatherData, WeatherForecastResponse } from "@/lib/interfaces";
 import { fetchWeatherApi } from 'openmeteo';
 
-async function fetchWeatherForecast(lat: number, lon: number) {
-  const params = {
-    "latitude": lat,
-    "longitude": lon,
-    "daily": ["temperature_2m_max", "temperature_2m_min", "wind_speed_10m_max"],
-    "wind_speed_unit": "ms",
-    "timezone": "Asia/Yakutsk"
-  };
-
-  const url = "https://api.open-meteo.com/v1/forecast";
-  const responses = await fetchWeatherApi(url, params);
-  const response = responses[0];
-  const utcOffsetSeconds = response.utcOffsetSeconds();
-  // const timezone = response.timezone();
-  // const timezoneAbbreviation = response.timezoneAbbreviation();
-  // const latitude = response.latitude();
-  // const longitude = response.longitude();
-  
-  const range = (start: number, stop: number, step: number) =>
-    Array.from({ length: (stop - start) / step }, (_, i) => start + i * step);
-
-  const daily = response.daily()!;
-  const weatherData: WeatherData = {
-    daily: {
-      time: range(Number(daily.time()), Number(daily.timeEnd()), daily.interval()).map(
-        (t) => new Date((t + utcOffsetSeconds) * 1000)
-      ),
-      temperature2mMax: Array.from(daily.variables(0)!.valuesArray()!),
-      temperature2mMin: Array.from(daily.variables(1)!.valuesArray()!),
-      windSpeed10mMax: Array.from(daily.variables(2)!.valuesArray()!),
-    },
-  };
-
-  return weatherData;
-}
-
 export default async function Home() {
+  async function fetchWeatherForecast(lat: number, lon: number) {
+    "use server";
+    const params = {
+      "latitude": lat,
+      "longitude": lon,
+      "daily": ["temperature_2m_max", "temperature_2m_min", "wind_speed_10m_max"],
+      "wind_speed_unit": "ms",
+      "timezone": "Asia/Yakutsk"
+    };
+  
+    const url = "https://api.open-meteo.com/v1/forecast";
+    const responses = await fetchWeatherApi(url, params);
+    const response = responses[0];
+    const utcOffsetSeconds = response.utcOffsetSeconds();
+    // const timezone = response.timezone();
+    // const timezoneAbbreviation = response.timezoneAbbreviation();
+    // const latitude = response.latitude();
+    // const longitude = response.longitude();
+    
+    const range = (start: number, stop: number, step: number) =>
+      Array.from({ length: (stop - start) / step }, (_, i) => start + i * step);
+  
+    const daily = response.daily()!;
+    const weatherData: WeatherData = {
+      daily: {
+        time: range(Number(daily.time()), Number(daily.timeEnd()), daily.interval()).map(
+          (t) => new Date((t + utcOffsetSeconds) * 1000)
+        ),
+        temperature2mMax: Array.from(daily.variables(0)!.valuesArray()!),
+        temperature2mMin: Array.from(daily.variables(1)!.valuesArray()!),
+        windSpeed10mMax: Array.from(daily.variables(2)!.valuesArray()!),
+      },
+    };
+  
+    return weatherData;
+  }
+  
   const data = await fetchWeatherForecast(62.035452, 129.675476);
   
   return (
