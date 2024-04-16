@@ -121,33 +121,6 @@ function CloudIcon(props: React.SVGProps<SVGSVGElement>) {
   );
 }
 
-function SunIcon(props: React.SVGProps<SVGSVGElement>) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="-12 -12 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <circle r="5" />
-      <path d="M0 -10 v-4" />
-      <path d="M0 10 v4" />
-      <path d="M10 0 h4" />
-      <path d="M-10 0 h-4" />
-      <path d="M7.07 -7.07 l2.83 -2.83" />
-      <path d="M-7.07 7.07 l-2.83 2.83" />
-      <path d="M7.07 7.07 l2.83 2.83" />
-      <path d="M-7.07 -7.07 l-2.83 -2.83" />
-    </svg>
-  );
-}
-
 function WindIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
     <svg
@@ -165,52 +138,6 @@ function WindIcon(props: React.SVGProps<SVGSVGElement>) {
       <path d="M17.7 7.7a2.5 2.5 0 1 1.8 4.3H2" />
       <path d="M9.6 4.6A2 2 0 1 11 8H2" />
       <path d="M12.6 19.4A2 2 0 1 14 16H2" />
-    </svg>
-  );
-}
-
-function CloudSunIcon(props: React.SVGProps<SVGSVGElement>) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M12 2v2" />
-      <path d="m4.93 4.93 1.41 1.41" />
-      <path d="M20 12h2" />
-      <path d="m19.07 4.93-1.41 1.41" />
-      <path d="M15.947 12.65a4 4 0 0 0 -5.925-4.128" />
-      <path d="M13 22H7a5 5 0 0 1 4.9-6H13a3 3 0 0 1 3 3Z" />
-    </svg>
-  );
-}
-
-function CloudRainIcon(props: React.SVGProps<SVGSVGElement>) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M4 14.899A7 7 0 0 1 15.71 8h1.79a4.5 4.5 0 0 1 4.5 4.5" />
-      <path d="M16 14v6" />
-      <path d="M8 14v6" />
-      <path d="M12 16v6" />
     </svg>
   );
 }
