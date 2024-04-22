@@ -1,10 +1,12 @@
 import { CardTitle, CardDescription, Card } from "@/components/ui/card";
 import { WeatherData, WeatherForecastResponse } from "@/lib/interfaces";
 import { fetchWeatherApi } from 'openmeteo';
+import { unstable_noStore } from 'next/cache';
 
 export default async function Home() {
   async function fetchWeatherForecast(lat: number, lon: number) {
     "use server";
+    unstable_noStore();
     const params = {
       "latitude": lat,
       "longitude": lon,
