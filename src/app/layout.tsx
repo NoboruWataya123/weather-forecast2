@@ -1,8 +1,15 @@
 import './globals.css'
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
-import React from "react";
 import Head from "next/head";
+import Script from "next/script";
+import { Telegram } from "@twa-dev/types";
+
+declare global {
+  interface Window {
+    Telegram: Telegram;
+  }
+}
 
 const APP_NAME = "Погода в Якутске";
 const APP_DEFAULT_TITLE = "Погода в Якутске";
@@ -38,6 +45,16 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
+          {/* <Script
+      id="TelegramWebApp"
+      src="https://telegram.org/js/telegram-web-app.js"
+      onReady={() => {
+        window.Telegram.WebApp.MainButton.setParams({
+          text: `Hello`,
+          is_visible: true,
+        });
+      }}
+    /> */}
     <Head>
       <meta name="viewport" content="width=device-width,initial-scale=1" />
       <title>Погода в Якутске</title>
@@ -46,6 +63,7 @@ export default function RootLayout({
       <link rel="mask-icon" href="/icons/mask-icon.svg" color="#FFFFFF" />
       <meta name="theme-color" content="#B4B4B4" />
       <link rel="manifest" href="/public/manifest.json" />
+      <script src="https://telegram.org/js/telegram-web-app.js"></script>
       <meta property="og:type" content="website" />
       <meta property="og:title" content="Погода в Якутске" />
       <meta property="og:description" content="Погода в Якутске" />
